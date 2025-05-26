@@ -30,20 +30,27 @@ async def check_and_save_image(image, final_image):
     save_dir = Path("./saved_images")
     save_dir.mkdir(exist_ok=True)
 
-    # Reset file pointer to beginning
-    await image.seek(0)
-
     # Create filename using hash and original extension
     file_extension = Path(image.filename).suffix if image.filename else ""
     filename = f"{final_image.hash}{file_extension}"
     file_path = save_dir / filename
-    # print(file_path.as_uri())
+
+    # Check if the file already exists
+    if file_path.exists():
+        print(f"File already exists: {file_path}")
+        route = str(file_path.resolve()).split("/")
+        fileroute = f"./{route[-2]}/{route[-1]}"
+        return fileroute
+
+    # If file doesn't exist, save it
+    # Reset file pointer to beginning
+    await image.seek(0)
 
     # Save the file
     with open(file_path, "wb") as f:
         content = await image.read()
         f.write(content)
+
     route = str(file_path.resolve()).split("/")
     fileroute = f"./{route[-2]}/{route[-1]}"
-
     return fileroute

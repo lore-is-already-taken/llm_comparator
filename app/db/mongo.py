@@ -1,7 +1,10 @@
+import json
 import os
 
 from dotenv import load_dotenv
 from pymongo import MongoClient
+
+from app.models.image import QuestionImage
 
 load_dotenv()
 MONGO_HOST = os.getenv("MONGO_HOST")
@@ -17,26 +20,24 @@ class MongoHandler:
         self.client = MongoClient(uri)
         self.db = self.client[MONGO_DB]
 
-    def save_doc(self, doc):
+    def save_doc(self, imageObject: QuestionImage):
         collection = self.db["images"]
+        doc = imageObject.model_dump()
+        doc["_id"] = imageObject.hash
+        print(json.dumps(doc))
 
         try:
             result = collection.insert_one(doc)
             print(f"Document inserted with ID: {result.inserted_id}")
-            return str(result.inserted_id)
+            return doc
 
         except Exception as e:
             raise e
 
     def check_if_exist(self, hash):
         collection = self.db["images"]
-        exists = collection.find_one({"hash": hash}) is not None
-        if exists:
-            print("Document exists")
-            return exists
-        else:
-            print("Document does not exist")
-            return False
+        exists = collection.find_one({"_id": hash})
+        return exists
 
     def list_collections(self):
         try:

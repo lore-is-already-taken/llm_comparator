@@ -34,17 +34,16 @@ async def testmodels(image: UploadFile = File(...), text: str = Form(...)):
     if not image_exist:
         filepath = await check_and_save_image(image, processed_image)
         processed_image.uri = str(filepath)
-        db_handler.save_doc(processed_image.model_dump())
+        result = db_handler.save_doc(processed_image)
         await image.seek(0)
         ai_responses = send_prompt(processed_image, text)
-        return processed_image
+        return result
     else:
         filepath = await check_and_save_image(image, processed_image)
         processed_image.uri = str(filepath)
-
         print("asking for the image that already exist...")
         ai_responses = send_prompt(processed_image, text)
-        return {"message": "image already in database"}
+        return image_exist
 
 
 # @app.get("/pruebaresponse")
