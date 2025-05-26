@@ -1,0 +1,10 @@
+pymongo
+python-dotenv
+fastapi
+uvicorn
+motor
+requests
+pillow
+python-multipart
+hashlib-additional
+openai
