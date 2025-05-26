@@ -24,7 +24,7 @@ async def process_image(image: UploadFile) -> QuestionImage:
     return final_image
 
 
-async def check_and_save_image(image, final_image):
+async def check_image(image, final_image) -> str:
     # Save image locally
     # Create directory if it doesn't exist
     save_dir = Path("./saved_images")

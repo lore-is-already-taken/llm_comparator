@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, UploadFile
 
 from app.AIModels.ai_manager import send_prompt
-from app.appUtils.image_utils import check_and_save_image, process_image
+from app.appUtils.image_utils import check_image, process_image
 from app.db.mongo import MongoHandler
 
 load_dotenv()
@@ -32,23 +32,18 @@ async def testmodels(image: UploadFile = File(...), text: str = Form(...)):
     image_exist = db_handler.check_if_exist(processed_image.hash)
 
     if not image_exist:
-        filepath = await check_and_save_image(image, processed_image)
+        filepath = await check_image(image, processed_image)
         processed_image.uri = str(filepath)
         result = db_handler.save_doc(processed_image)
         await image.seek(0)
         ai_responses = send_prompt(processed_image, text)
         return result
     else:
-        filepath = await check_and_save_image(image, processed_image)
+        filepath = await check_image(image, processed_image)
         processed_image.uri = str(filepath)
         print("asking for the image that already exist...")
         ai_responses = send_prompt(processed_image, text)
         return image_exist
-
-
-# @app.get("/pruebaresponse")
-# def prueba():
-#     pregunta_chatgpt()
 
 
 if __name__ == "__main__":
