@@ -30,7 +30,6 @@ class MongoHandler:
 
     def check_if_exist(self, hash):
         collection = self.db["images"]
-        # exists = collection.count_documents({"hash": hash}) > 0
         exists = collection.find_one({"hash": hash}) is not None
         if exists:
             print("Document exists")

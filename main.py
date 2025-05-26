@@ -39,6 +39,9 @@ async def testmodels(image: UploadFile = File(...), text: str = Form(...)):
         ai_responses = send_prompt(processed_image, text)
         return processed_image
     else:
+        filepath = await check_and_save_image(image, processed_image)
+        processed_image.uri = str(filepath)
+
         print("asking for the image that already exist...")
         ai_responses = send_prompt(processed_image, text)
         return {"message": "image already in database"}
